@@ -9,6 +9,7 @@ Starter kit to accelerate the development of new applications.
 * Jetstream
 * Vue 3
 * PrimeVue
+* Sakai PrimeVue Theme
 * Vue-i18n
 * Spatie Permissions
 * Spatie Settings

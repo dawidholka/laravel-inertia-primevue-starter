@@ -1,15 +1,10 @@
 <template>
-    <app-layout title="Dashboard">
-        <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Dashboard
-            </h2>
-        </template>
-
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-                    <welcome />
+    <app-layout>
+        <div class="grid">
+            <div class="col-12">
+                <div class="card">
+                    <h5>Empty Page</h5>
+                    <p>Use this page to start from scratch and place your custom content.</p>
                 </div>
             </div>
         </div>
@@ -17,14 +12,12 @@
 </template>
 
 <script>
-    import { defineComponent } from 'vue'
-    import AppLayout from '@/Layouts/AppLayout.vue'
-    import Welcome from '@/Jetstream/Welcome.vue'
+import {defineComponent} from 'vue'
+import AppLayout from '@/Layouts/AppLayout.vue'
 
-    export default defineComponent({
-        components: {
-            AppLayout,
-            Welcome,
-        },
-    })
+export default defineComponent({
+    components: {
+        AppLayout,
+    },
+})
 </script>

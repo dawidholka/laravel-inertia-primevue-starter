@@ -1,0 +1,32 @@
+.p-toast.p-toast-top-right {
+    z-index: 1000;
+    top: 7rem;
+}
+
+@import '~primevue/resources/primevue.min.css';
+@import '~primevue/resources/themes/saga-blue/theme.css';
+@import '~primeflex/primeflex.min.css';
+@import '~primeicons/primeicons.css';
+@import './layout';
+
+*::-webkit-scrollbar {
+    width: 0.75em;
+}
+
+*::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.68);
+    outline: 1px solid rgba(0, 0, 0, 0.68);
+}
+
+.layout-sidebar::-webkit-scrollbar,
+.layout-sidebar::-webkit-scrollbar-track,
+.layout-sidebar::-webkit-scrollbar-thumb
+{
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
