@@ -1,93 +1,112 @@
 <template>
-    <jet-form-section @submitted="updatePassword">
+    <card class="card" @submitted="updatePassword">
         <template #title>
-            Update Password
+            Zmiana hasła
         </template>
 
-        <template #description>
-            Ensure your account is using a long, random password to stay secure.
-        </template>
-
-        <template #form>
-            <div class="col-span-6 sm:col-span-4">
-                <jet-label for="current_password" value="Current Password" />
-                <jet-input id="current_password" type="password" class="mt-1 block w-full" v-model="form.current_password" ref="current_password" autocomplete="current-password" />
-                <jet-input-error :message="form.errors.current_password" class="mt-2" />
+        <template #content>
+            <div class="mb-5">
+                Upewnij się, że Twoje konto używa długiego, losowego hasła, aby zachować bezpieczeństwo.
             </div>
-
-            <div class="col-span-6 sm:col-span-4">
-                <jet-label for="password" value="New Password" />
-                <jet-input id="password" type="password" class="mt-1 block w-full" v-model="form.password" ref="password" autocomplete="new-password" />
-                <jet-input-error :message="form.errors.password" class="mt-2" />
+            <div class="field">
+                <label for="current_password">Aktualne hasło</label>
+                <InputText
+                    id="current_password"
+                    class="w-full"
+                    placeholder="Wprowadź hasło"
+                    :class="{'p-invalid': form.errors.current_password}"
+                    type="password"
+                    v-model="form.current_password"
+                />
+                <small v-if="form.errors.current_password" class="p-invalid">
+                    {{ form.errors.current_password }}
+                </small>
             </div>
-
-            <div class="col-span-6 sm:col-span-4">
-                <jet-label for="password_confirmation" value="Confirm Password" />
-                <jet-input id="password_confirmation" type="password" class="mt-1 block w-full" v-model="form.password_confirmation" autocomplete="new-password" />
-                <jet-input-error :message="form.errors.password_confirmation" class="mt-2" />
+            <div class="field">
+                <label for="password">Nowe hasło</label>
+                <InputText
+                    id="password"
+                    class="w-full"
+                    placeholder="Wprowadź hasło"
+                    :class="{'p-invalid': form.errors.password}"
+                    type="password"
+                    v-model="form.password"
+                />
+                <small v-if="form.errors.password" class="p-invalid">
+                    {{ form.errors.password }}
+                </small>
+            </div>
+            <div class="field">
+                <label for="password_confirmation">Powórz nowe hasło</label>
+                <InputText
+                    id="password_confirmation"
+                    class="w-full"
+                    placeholder="Wprowadź hasło"
+                    :class="{'p-invalid': form.errors.password_confirmation}"
+                    type="password"
+                    v-model="form.password_confirmation"
+                />
+                <small v-if="form.errors.password_confirmation" class="p-invalid">
+                    {{ form.errors.password_confirmation }}
+                </small>
             </div>
         </template>
 
-        <template #actions>
-            <jet-action-message :on="form.recentlySuccessful" class="mr-3">
-                Saved.
-            </jet-action-message>
-
-            <jet-button :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                Save
-            </jet-button>
+        <template #footer>
+            <Button
+                label="Zapisz"
+                :loading="form.processing"
+                @click="updatePassword"
+            />
         </template>
-    </jet-form-section>
+    </card>
 </template>
 
 <script>
-    import { defineComponent } from 'vue'
-    import JetActionMessage from '@/Jetstream/ActionMessage.vue'
-    import JetButton from '@/Jetstream/Button.vue'
-    import JetFormSection from '@/Jetstream/FormSection.vue'
-    import JetInput from '@/Jetstream/Input.vue'
-    import JetInputError from '@/Jetstream/InputError.vue'
-    import JetLabel from '@/Jetstream/Label.vue'
+import Card from "primevue/card";
+import Button from "primevue/button";
+import InputText from "primevue/inputtext";
+import FlashMessage from "../../../Services/FlashMessage";
 
-    export default defineComponent({
-        components: {
-            JetActionMessage,
-            JetButton,
-            JetFormSection,
-            JetInput,
-            JetInputError,
-            JetLabel,
-        },
+export default {
+    components: {
+        Card,
+        Button,
+        InputText,
+    },
+    mixins: [FlashMessage],
+    data() {
+        return {
+            form: this.$inertia.form({
+                current_password: '',
+                password: '',
+                password_confirmation: '',
+            }),
+        }
+    },
 
-        data() {
-            return {
-                form: this.$inertia.form({
-                    current_password: '',
-                    password: '',
-                    password_confirmation: '',
-                }),
-            }
-        },
-
-        methods: {
-            updatePassword() {
-                this.form.put(route('user-password.update'), {
-                    errorBag: 'updatePassword',
-                    preserveScroll: true,
-                    onSuccess: () => this.form.reset(),
-                    onError: () => {
-                        if (this.form.errors.password) {
-                            this.form.reset('password', 'password_confirmation')
-                            this.$refs.password.focus()
-                        }
-
-                        if (this.form.errors.current_password) {
-                            this.form.reset('current_password')
-                            this.$refs.current_password.focus()
-                        }
+    methods: {
+        updatePassword() {
+            this.form.put(route('user-password.update'), {
+                errorBag: 'updatePassword',
+                preserveScroll: true,
+                onSuccess: () => {
+                    this.form.reset();
+                    this.flashSuccess('Zapisano hasło.');
+                },
+                onError: () => {
+                    if (this.form.errors.password) {
+                        this.form.reset('password', 'password_confirmation')
+                        this.$refs.password.focus()
                     }
-                })
-            },
+
+                    if (this.form.errors.current_password) {
+                        this.form.reset('current_password')
+                        this.$refs.current_password.focus()
+                    }
+                }
+            })
         },
-    })
+    },
+}
 </script>

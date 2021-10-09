@@ -15,6 +15,7 @@
         <transition name="layout-mask">
             <div class="layout-mask p-component-overlay" v-if="mobileMenuActive"></div>
         </transition>
+        <Toast/>
     </div>
 </template>
 
@@ -22,6 +23,7 @@
 import AppTopBar from '../Components/AppTopbar.vue';
 import AppMenu from '../Components/AppMenu.vue';
 import AppFooter from '../Components/AppFooter.vue';
+import Toast from 'primevue/toast';
 
 export default {
     data() {
@@ -151,6 +153,7 @@ export default {
         'AppTopBar': AppTopBar,
         'AppMenu': AppMenu,
         'AppFooter': AppFooter,
+        Toast,
     }
 }
 </script>
