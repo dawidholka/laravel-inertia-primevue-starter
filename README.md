@@ -3,7 +3,6 @@
 Starter kit to accelerate the development of new applications.
 
 ### Features
-
 * Laravel 8
 * Inertia.js
 * Jetstream

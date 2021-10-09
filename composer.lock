@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1f2ed76e2468543460da842129d39629",
+    "content-hash": "79cb967934a3236ad6cad590ae0f91f6",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -3443,6 +3443,72 @@
                 }
             ],
             "time": "2021-09-25T23:10:38+00:00"
+        },
+        {
+            "name": "spatie/data-transfer-object",
+            "version": "3.7.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spatie/data-transfer-object.git",
+                "reference": "56fcac4ba39c9307a9514d49d3435f8a48409bee"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spatie/data-transfer-object/zipball/56fcac4ba39c9307a9514d49d3435f8a48409bee",
+                "reference": "56fcac4ba39c9307a9514d49d3435f8a48409bee",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "illuminate/collections": "^8.36",
+                "jetbrains/phpstorm-attributes": "^1.0",
+                "larapack/dd": "^1.1",
+                "phpunit/phpunit": "^9.0"
+            },
+            "suggest": {
+                "phpstan/phpstan": "Take advantage of checkUninitializedProperties with \\Spatie\\DataTransferObject\\PHPstan\\PropertiesAreAlwaysInitializedExtension"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\DataTransferObject\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Brent Roose",
+                    "email": "brent@spatie.be",
+                    "homepage": "https://spatie.be",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Data transfer objects with batteries included",
+            "homepage": "https://github.com/spatie/data-transfer-object",
+            "keywords": [
+                "data-transfer-object",
+                "spatie"
+            ],
+            "support": {
+                "issues": "https://github.com/spatie/data-transfer-object/issues",
+                "source": "https://github.com/spatie/data-transfer-object/tree/3.7.2"
+            },
+            "funding": [
+                {
+                    "url": "https://spatie.be/open-source/support-us",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/spatie",
+                    "type": "github"
+                }
+            ],
+            "time": "2021-09-17T04:04:12+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -8611,7 +8677,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^7.3|^8.0"
+        "php": "^8.0"
     },
     "platform-dev": [],
     "plugin-api-version": "2.1.0"

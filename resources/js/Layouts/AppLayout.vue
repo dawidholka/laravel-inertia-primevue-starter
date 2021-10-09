@@ -38,7 +38,7 @@ export default {
                     label: 'Menu',
                     items: [
                         {label: 'Dashboard', icon: 'pi pi-fw pi-home', to: this.route('dashboard'),},
-                        {label: 'Datatable', icon: 'pi pi-fw pi-home', to: this.route('dashboard'),},
+                        {label: 'Datatable', icon: 'pi pi-fw pi-home', to: this.route('users.index'),},
                         {label: 'Dashboard', icon: 'pi pi-fw pi-home', to: this.route('dashboard'),},
                         {label: 'Dashboard', icon: 'pi pi-fw pi-home', to: this.route('dashboard'),},
                         {label: 'Dashboard', icon: 'pi pi-fw pi-home', to: this.route('dashboard'),},
