@@ -1,4 +1,7 @@
-## [WIP] Laravel Jetstream Inertia Vue PrimeVue Starter
+## Laravel Jetstream Inertia Vue PrimeVue Starter
+
+![Screenshot](docs/screen.png)
+
 
 Starter kit to accelerate the development of new applications.
 
