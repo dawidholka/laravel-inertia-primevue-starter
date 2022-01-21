@@ -1,23 +1,18 @@
 <template>
-    <app-layout>
-        <div class="grid">
-            <div class="col-12">
-                <div class="card">
-                    <h5>{{ $t('common.emptyPage') }}</h5>
-                    <p>Use this page to start from scratch and place your custom content.</p>
-                </div>
+    <div class="grid">
+        <div class="col-12">
+            <div class="card">
+                <h5>{{ $t('common.emptyPage') }}</h5>
+                <p>Use this page to start from scratch and place your custom content.</p>
             </div>
         </div>
-    </app-layout>
+    </div>
 </template>
 
 <script>
-import {defineComponent} from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 
-export default defineComponent({
-    components: {
-        AppLayout,
-    },
-})
+export default {
+    layout: AppLayout
+};
 </script>
