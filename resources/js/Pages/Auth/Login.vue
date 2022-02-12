@@ -31,7 +31,8 @@
                                     :toggleMask="true"
                                     class="w-full mb-3"
                                     inputClass="w-full"
-                                    inputStyle="padding:1rem"></Password>
+                                    inputStyle="padding:1rem"
+                                    @keyup.enter="submit"></Password>
 
                         <div class="flex align-items-center justify-content-between mb-5">
                             <div class="flex align-items-center">

@@ -57,7 +57,15 @@ export default {
             this.$toast.removeAllGroups();
         }
     },
+    mounted(){
+        this.$nextTick(() => {
+            this.onload();
+        });
+    },
     methods: {
+        onload(){
+            document.documentElement.style.fontSize = 13 + 'px';
+        },
         onWrapperClick() {
             if (!this.menuClick) {
                 this.overlayMenuActive = false;
