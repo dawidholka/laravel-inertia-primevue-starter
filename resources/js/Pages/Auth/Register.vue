@@ -1,101 +1,99 @@
 <template>
     <Head title="Register" />
-
-    <jet-authentication-card>
-        <template #logo>
-            <jet-authentication-card-logo />
-        </template>
-
-        <jet-validation-errors class="mb-4" />
-
-        <form @submit.prevent="submit">
-            <div>
-                <jet-label for="name" value="Name" />
-                <jet-input id="name" type="text" class="mt-1 block w-full" v-model="form.name" required autofocus autocomplete="name" />
+    <div class="surface-0 flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden">
+        <div class="grid justify-content-center p-2 lg:p-0" style="min-width:80%">
+            <div class="col-12 mt-5 xl:mt-0 text-center">
+                <img :src="'images/logo-' + logoColor + '.svg'" alt="Sakai logo" class="mb-5" style="width:81px; height:60px;">
             </div>
-
-            <div class="mt-4">
-                <jet-label for="email" value="Email" />
-                <jet-input id="email" type="email" class="mt-1 block w-full" v-model="form.email" required />
-            </div>
-
-            <div class="mt-4">
-                <jet-label for="password" value="Password" />
-                <jet-input id="password" type="password" class="mt-1 block w-full" v-model="form.password" required autocomplete="new-password" />
-            </div>
-
-            <div class="mt-4">
-                <jet-label for="password_confirmation" value="Confirm Password" />
-                <jet-input id="password_confirmation" type="password" class="mt-1 block w-full" v-model="form.password_confirmation" required autocomplete="new-password" />
-            </div>
-
-            <div class="mt-4" v-if="$page.props.jetstream.hasTermsAndPrivacyPolicyFeature">
-                <jet-label for="terms">
-                    <div class="flex items-center">
-                        <jet-checkbox name="terms" id="terms" v-model:checked="form.terms" />
-
-                        <div class="ml-2">
-                            I agree to the <a target="_blank" :href="route('terms.show')" class="underline text-sm text-gray-600 hover:text-gray-900">Terms of Service</a> and <a target="_blank" :href="route('policy.show')" class="underline text-sm text-gray-600 hover:text-gray-900">Privacy Policy</a>
-                        </div>
+            <div class="col-12 xl:col-6" style="border-radius:56px; padding:0.3rem; background: linear-gradient(180deg, var(--primary-color), rgba(33, 150, 243, 0) 30%);">
+                <div class="h-full w-full m-0 py-7 px-4" style="border-radius:53px; background: linear-gradient(180deg, var(--surface-50) 38.9%, var(--surface-0));">
+                    <div class="text-center mb-5">
+                        <img src="images/avatar.png" alt="Image" height="50" class="mb-3">
+                        <div class="text-900 text-3xl font-medium mb-3">Welcome, Isabel!</div>
+                        <span class="text-600 font-medium">Sign in to continue</span>
                     </div>
-                </jet-label>
-            </div>
+                    <form @submit.prevent="submit">
+                        <div class="w-full md:w-10 mx-auto">
+                            <label for="name" class="block text-900 text-xl font-medium mb-2">Name</label>
+                            <InputText id="name" v-model="form.name" type="text" class="w-full mb-3" placeholder="Name" style="padding:1rem;" />
 
-            <div class="flex items-center justify-end mt-4">
-                <Link :href="route('login')" class="underline text-sm text-gray-600 hover:text-gray-900">
-                    Already registered?
-                </Link>
+                            <label for="email" class="block text-900 text-xl font-medium mb-2">Email</label>
+                            <InputText id="email" v-model="form.email" type="text" class="w-full mb-3" placeholder="Email" style="padding:1rem;" />
 
-                <jet-button class="ml-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Register
-                </jet-button>
+                            <label for="password" class="block text-900 font-medium text-xl mb-2">Password</label>
+                            <Password id="password" v-model="form.password" placeholder="Password" :toggleMask="true" class="w-full mb-3" inputClass="w-full" inputStyle="padding:1rem"></Password>
+
+                            <label for="password_confirmation" class="block text-900 font-medium text-xl mb-2">Confirm Password</label>
+                            <Password id="password_confirmation" v-model="form.password_confirmation" placeholder="Password Confirmation" :toggleMask="true" class="w-full mb-3" inputClass="w-full" inputStyle="padding:1rem"></Password>
+
+                            <div class="flex align-items-center justify-content-between mb-5">
+                                <div class="flex align-items-center" v-if="$page.props.jetstream.hasTermsAndPrivacyPolicyFeature">
+                                    <Checkbox id="terms" v-model="form.terms" name="terms" :binary="true" class="mr-2"></Checkbox>
+                                    <div class="ml-2">
+                                        I agree to the <a target="_blank" :href="route('terms.show')" class="underline text-sm text-gray-600 hover:text-gray-900">Terms of Service</a> and <a target="_blank" :href="route('policy.show')" class="underline text-sm text-gray-600 hover:text-gray-900">Privacy Policy</a>
+                                    </div>
+                                </div>
+                                <a :href="route('login')" class="font-medium no-underline ml-2 text-right cursor-pointer" style="color: var(--primary-color)">Already Register?</a>
+                            </div>
+                            <Button type="submit" label="Register" class="w-full p-3 text-xl" :class="{ 'opacity-25': form.processing }" :disabled="form.processing"></button>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </form>
-    </jet-authentication-card>
+        </div>
+    </div>
 </template>
 
 <script>
-    import { defineComponent } from 'vue'
-    import JetAuthenticationCard from '@/Jetstream/AuthenticationCard.vue'
-    import JetAuthenticationCardLogo from '@/Jetstream/AuthenticationCardLogo.vue'
-    import JetButton from '@/Jetstream/Button.vue'
-    import JetInput from '@/Jetstream/Input.vue'
-    import JetCheckbox from '@/Jetstream/Checkbox.vue'
-    import JetLabel from '@/Jetstream/Label.vue'
-    import JetValidationErrors from '@/Jetstream/ValidationErrors.vue'
-    import { Head, Link } from '@inertiajs/inertia-vue3';
+import { Head,Link } from '@inertiajs/inertia-vue3';
+import Checkbox from 'primevue/checkbox';
+import Button from 'primevue/button';
+import InputText from 'primevue/inputtext';
+import Password from 'primevue/password';
 
-    export default defineComponent({
-        components: {
-            Head,
-            JetAuthenticationCard,
-            JetAuthenticationCardLogo,
-            JetButton,
-            JetInput,
-            JetCheckbox,
-            JetLabel,
-            JetValidationErrors,
-            Link,
-        },
-
-        data() {
-            return {
-                form: this.$inertia.form({
-                    name: '',
-                    email: '',
-                    password: '',
-                    password_confirmation: '',
-                    terms: false,
-                })
-            }
-        },
-
-        methods: {
-            submit() {
+export default {
+    components: {
+        Button,
+        Checkbox,
+        InputText,
+        Password,
+        Link,
+        Head
+    },
+    computed: {
+        logoColor() {
+            return 'dark';
+        }
+    },
+    data() {
+        return {
+            form: this.$inertia.form({
+                name: '',
+                email: '',
+                password: '',
+                password_confirmation: '',
+                terms: false
+            })
+        }
+    },
+    methods: {
+        submit() {
                 this.form.post(this.route('register'), {
                     onFinish: () => this.form.reset('password', 'password_confirmation'),
                 })
             }
-        }
-    })
+    }
+}
 </script>
+
+<style scoped>
+.pi-eye {
+    transform:scale(1.6);
+    margin-right: 1rem;
+}
+
+.pi-eye-slash {
+    transform:scale(1.6);
+    margin-right: 1rem;
+}
+</style>
