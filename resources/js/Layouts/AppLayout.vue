@@ -38,10 +38,7 @@ export default {
                     label: 'Menu',
                     items: [
                         {label: 'Dashboard', icon: 'pi pi-fw pi-home', to: this.route('dashboard'), prefix: 'dashboard'},
-                        {label: 'Datatable', icon: 'pi pi-fw pi-home', to: this.route('users.index'),},
-                        {label: 'Dashboard', icon: 'pi pi-fw pi-home', to: this.route('dashboard'),},
-                        {label: 'Dashboard', icon: 'pi pi-fw pi-home', to: this.route('dashboard'),},
-                        {label: 'Dashboard', icon: 'pi pi-fw pi-home', to: this.route('dashboard'),},
+                        {label: 'User Management', icon: 'pi pi-fw pi-users', to: this.route('users.index'),},
                         {
                             label: 'Sign out', icon: 'pi pi-fw pi-sign-out', command: () => {
                                 this.$inertia.post(this.route('logout'))
