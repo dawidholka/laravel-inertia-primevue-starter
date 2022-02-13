@@ -1,9 +1,16 @@
 <template>
-    <div>
         <div class="p-grid">
             <div class="p-col-12">
                 <div class="card">
-                    <Menubar :model="menuItems"/>
+                    <Toolbar>
+                        <template v-slot:start>
+                            <div class="my-2">
+                                Heheheh
+                                <Button label="New" icon="pi pi-plus" class="p-button-success mr-2" @click="openNew" />
+                                <Button label="Delete" icon="pi pi-trash" class="p-button-danger" />
+                            </div>
+                        </template>
+                    </Toolbar>
                 </div>
             </div>
             <div class="p-col-12">
@@ -73,7 +80,6 @@
             :loading="deletingModel"
             @delete="onDelete"
         />
-    </div>
 </template>
 
 <script>
@@ -85,6 +91,7 @@ import Menubar from "primevue/menubar";
 import Column from "primevue/column";
 import Button from "primevue/button";
 import DeleteDialog from "../../Components/DeleteDialog";
+import Toolbar from 'primevue/toolbar';
 
 export default {
     name: "Index",
@@ -95,6 +102,7 @@ export default {
         DataTable,
         Column,
         Button,
+        Toolbar,
         DeleteDialog
     },
     data() {

@@ -7,23 +7,18 @@
 				<Toolbar class="mb-4">
 					<template v-slot:start>
 						<div class="my-2">
-							<Button label="New" icon="pi pi-plus" class="p-button-success mr-2" @click="openNew" />
-							<Button label="Delete" icon="pi pi-trash" class="p-button-danger" @click="confirmDeleteSelected" :disabled="!selectedProducts || !selectedProducts.length" />
+							<Button label="New" icon="pi pi-plus" class="p-button-success mr-2" />
+							<Button label="Delete" icon="pi pi-trash" class="p-button-danger" />
 						</div>
-					</template>
-
-					<template v-slot:end>
-						<FileUpload mode="basic" accept="image/*" :maxFileSize="1000000" label="Import" chooseLabel="Import" class="mr-2 inline-block" />
-						<Button label="Export" icon="pi pi-upload" class="p-button-help" @click="exportCSV($event)"  />
 					</template>
 				</Toolbar>
 
-				<DataTable ref="dt" :value="products" v-model:selection="selectedProducts" dataKey="id" :paginator="true" :rows="10" :filters="filters"
+				<DataTable ref="dt" :value="datatable.data" v-model:selection="selectedModel" dataKey="id" :paginator="true" :rows="10" :filters="filters"
 							paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown" :rowsPerPageOptions="[5,10,25]"
 							currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products" responsiveLayout="scroll">
 					<template #header>
 						<div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-							<h5 class="m-0">Manage Products</h5>
+							<h5 class="m-0">Manage User</h5>
 							<span class="block mt-2 md:mt-0 p-input-icon-left">
                                 <i class="pi pi-search" />
                                 <InputText v-model="filters['global'].value" placeholder="Search..." />
@@ -32,52 +27,28 @@
 					</template>
 
 					<Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-					<Column field="code" header="Code" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+					<Column field="code" header="Code" :sortable="true" headerStyle="width:5%; min-width:10rem;">
 						<template #body="slotProps">
-							<span class="p-column-title">Code</span>
-							{{slotProps.data.code}}
+							<span class="p-column-title">Id</span>
+							{{slotProps.data.id}}
 						</template>
 					</Column>
-					<Column field="name" header="Name" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+					<Column field="name" header="Name" :sortable="true" headerStyle="width:40%; min-width:10rem;">
 						<template #body="slotProps">
 							<span class="p-column-title">Name</span>
 							{{slotProps.data.name}}
 						</template>
 					</Column>
-					<Column header="Image" headerStyle="width:14%; min-width:10rem;">
+                    <Column field="email" header="Email" :sortable="true" headerStyle="width:40%; min-width:10rem;">
 						<template #body="slotProps">
-							<span class="p-column-title">Image</span>
-							<img :src="'images/product/' + slotProps.data.image" :alt="slotProps.data.image" class="shadow-2" width="100" />
+							<span class="p-column-title">Email</span>
+							{{slotProps.data.email}}
 						</template>
 					</Column>
-					<Column field="price" header="Price" :sortable="true" headerStyle="width:14%; min-width:8rem;">
+					<Column headerStyle="width:15%;min-width:10rem;">
 						<template #body="slotProps">
-							<span class="p-column-title">Price</span>
-							{{formatCurrency(slotProps.data.price)}}
-						</template>
-					</Column>
-					<Column field="category" header="Category" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-						<template #body="slotProps">
-							<span class="p-column-title">Category</span>
-							{{formatCurrency(slotProps.data.category)}}
-						</template>
-					</Column>
-					<Column field="rating" header="Reviews" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-						<template #body="slotProps">
-							<span class="p-column-title">Rating</span>
-							<Rating :modelValue="slotProps.data.rating" :readonly="true" :cancel="false" />
-						</template>
-					</Column>
-					<Column field="inventoryStatus" header="Status" :sortable="true" headerStyle="width:14%; min-width:10rem;">
-						<template #body="slotProps">
-							<span class="p-column-title">Status</span>
-							<span :class="'product-badge status-' + (slotProps.data.inventoryStatus ? slotProps.data.inventoryStatus.toLowerCase() : '')">{{slotProps.data.inventoryStatus}}</span>
-						</template>
-					</Column>
-					<Column headerStyle="min-width:10rem;">
-						<template #body="slotProps">
-							<Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" @click="editProduct(slotProps.data)" />
-							<Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2" @click="confirmDeleteProduct(slotProps.data)" />
+							<Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" @click="editProduct(slotProps.data.id)" />
+							<Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2" @click="confirmDeleteProduct(slotProps.data.id)" />
 						</template>
 					</Column>
 				</DataTable>
@@ -177,8 +148,8 @@
 </template>
 
 <script>
+import AppLayout from "../../Layouts/AppLayout";
 import {FilterMatchMode} from 'primevue/api';
-import ProductService from '../service/ProductService';
 import { Head } from '@inertiajs/inertia-vue3';
 import Checkbox from 'primevue/checkbox';
 import Button from 'primevue/button';
@@ -194,25 +165,11 @@ import InputNumber from 'primevue/inputnumber';
 import Dropdown from 'primevue/dropdown';
 import RadioButton from 'primevue/radiobutton';
 import Dialog from 'primevue/dialog';
+import DatatableService from '../../Services/DatatableService';
 
 export default {
-	data() {
-		return {
-			products: null,
-			productDialog: false,
-			deleteProductDialog: false,
-			deleteProductsDialog: false,
-			product: {},
-			selectedProducts: null,
-			filters: {},
-			submitted: false,
-			statuses: [
-				{label: 'INSTOCK', value: 'instock'},
-				{label: 'LOWSTOCK', value: 'lowstock'},
-				{label: 'OUTOFSTOCK', value: 'outofstock'}
-			]
-		}
-	},
+    name: "Index",
+    layout: AppLayout,
     components: {
         Head,
         Checkbox,
@@ -230,19 +187,63 @@ export default {
         RadioButton,
         Dialog
     },
-	productService: null,
+	data() {
+		return {
+            datatable: {
+                loading: true,
+                totalRecords: 0,
+                data: null,
+                filters: {
+                    'global': {value: null, matchMode: FilterMatchMode.CONTAINS},
+                    'status': {value: null, matchMode: FilterMatchMode.EQUALS},
+                },
+                lazyParams: {}
+            },
+            menuItems: [
+                {
+                    label: 'Dodaj użytkownika',
+                    icon: 'pi pi-fw pi-plus',
+                    command: () => {
+                        this.$inertia.get(this.route('users.create'));
+                    },
+                },
+            ],
+            importDialog: false,
+            importForm: this.$inertia.form({
+                file: null
+            }),
+            selectedModel: null,
+            deleteDialog: false,
+            deletingModel: false,
+            model: null,
+            modelDialog: false,
+            models: {}
+        }
+	},
+	datatableService: null,
 	created() {
-
-		this.productService = new ProductService();
+        this.datatableService = new DatatableService();
 		this.initFilters();
 	},
 	mounted() {
-		this.productService.getProducts().then(data => this.products = data);
+        this.datatable.loading = true;
+        this.datatable.lazyParams = {
+            first: 0,
+            rows: this.$refs.dt.rows,
+            sortField: 'id',
+            sortOrder: -1,
+            filters: this.datatable.filters
+        };
+        this.loadLazyData();
 	},
 	methods: {
         loadLazyData() {
             this.datatable.loading = true;
-            this.datatable
+            this.datatableService.getData(this.route('users.datatable'), this.datatable.lazyParams).then(data => {
+                this.datatable.data = data.data;
+                this.datatable.totalRecords = data.total;
+                this.datatable.loading = false;
+            });
         },
 		formatCurrency(value) {
 			if(value)
@@ -332,5 +333,5 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '../assets/demo/badges.scss';
+@import '../../../assets/demo/badges.scss';
 </style>
