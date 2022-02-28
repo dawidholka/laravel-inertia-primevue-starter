@@ -18,7 +18,7 @@ class UserController extends Controller
 {
     public function index(): Response
     {
-        return Inertia::render('Users/Crud');
+        return Inertia::render('Users/CrudDemo');
     }
 
     public function datatable(

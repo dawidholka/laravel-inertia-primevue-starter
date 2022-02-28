@@ -196,8 +196,10 @@ import Dialog from 'primevue/dialog';
 import ProductService from '../../Services/ProductService';
 import StyleClass from 'primevue/styleclass';
 import Badge from 'primevue/badge';
+import Textarea from 'primevue/textarea';
 
 export default {
+    layout: AppLayout,
     components: {
         AppLayout,
         Head,
@@ -217,7 +219,8 @@ export default {
         RadioButton,
         Dialog,
         StyleClass,
-        ProductService
+        ProductService,
+        Textarea
     },
 	data() {
 		return {
