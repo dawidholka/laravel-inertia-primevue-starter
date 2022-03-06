@@ -75,7 +75,7 @@ class UserController extends Controller
 
     public function destroy(User $user): JsonResponse
     {
-        abort_if(!auth()->user()->admin, 403);
+        // abort_if(!auth()->user()->admin, 403);
 
         $user->delete();
         return response()->json(['message' => 'User deleted successfully']);

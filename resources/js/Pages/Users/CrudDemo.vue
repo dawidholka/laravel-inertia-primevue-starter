@@ -223,11 +223,6 @@ export default {
             this.datatable.lazyParams = event;
             this.loadLazyData();
         },
-		formatCurrency(value) {
-			if(value)
-				return value.toLocaleString('en-US', {style: 'currency', currency: 'USD'});
-			return;
-		},
 		openNew() {
 			this.model = {};
 			this.submitted = false;
@@ -250,6 +245,7 @@ export default {
                         this.$toast.add({severity:'error', summary: 'Error', detail: 'User not updated', life: 3000});
                     });
 				}
+                // If empty then add new record
 				else {
                     axios.post('api/user', this.model)
                     .then(response => {
@@ -274,31 +270,16 @@ export default {
 			this.deleteModelDialog = true;
 		},
 		deleteModel() {
-			this.models = this.models.filter(val => val.id !== this.model.id);
-			this.deleteModelDialog = false;
-			this.model = {};
-			this.$toast.add({severity:'success', summary: 'Successful', detail: 'Model Deleted', life: 3000});
-		},
-		findIndexById(id) {
-			let index = -1;
-			for (let i = 0; i < this.models.length; i++) {
-				if (this.models[i].id === id) {
-					index = i;
-					break;
-				}
-			}
-			return index;
-		},
-		createId() {
-			let id = '';
-			var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-			for ( var i = 0; i < 5; i++ ) {
-				id += chars.charAt(Math.floor(Math.random() * chars.length));
-			}
-			return id;
-		},
-		exportCSV() {
-			this.$refs.dt.exportCSV();
+            axios.delete('api/user/'+this.model.id)
+                    .then(response => {
+                        this.$toast.add({severity:'success', summary: 'Successful', detail: 'User Deleted', life: 3000});
+                        this.deleteModelDialog = false;
+			            this.model = {};
+                        this.loadLazyData();
+                    })
+                    .catch(error => {
+                        this.$toast.add({severity:'error', summary: 'Error', detail: 'User not deleted', life: 3000});
+                    });
 		},
 		confirmDeleteSelected() {
 			this.deleteModelsDialog = true;
