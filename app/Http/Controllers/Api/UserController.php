@@ -52,7 +52,7 @@ class UserController extends Controller
         UpdateUser $updateUser
     ): JsonResponse
     {
-        abort_if(!auth()->user()->admin, 403);
+        // abort_if(!auth()->user()->admin, 403);
 
         $request->validate([
             'name' => ['required', 'string'],

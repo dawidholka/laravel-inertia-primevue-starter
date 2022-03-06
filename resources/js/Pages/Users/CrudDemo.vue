@@ -241,11 +241,10 @@ export default {
 			this.submitted = true;
 			if (this.model) {
 			    if (this.model.id) {
-				    this.models[this.findIndexById(this.model.id)] = this.model;
-
-                    axios.put('api/user', this.model)
+                    axios.put('api/user/'+this.model.id, this.model)
                     .then(response => {
                         this.$toast.add({severity:'success', summary: 'Successful', detail: 'User Updated', life: 3000});
+                        this.loadLazyData();
                     })
                     .catch(error => {
                         this.$toast.add({severity:'error', summary: 'Error', detail: 'User not updated', life: 3000});
