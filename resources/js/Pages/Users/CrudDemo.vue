@@ -8,14 +8,30 @@
 					<template v-slot:start>
 						<div class="my-2">
 							<Button label="New" icon="pi pi-plus" class="p-button-success mr-2" @click="openNew" />
-							<Button label="Delete" icon="pi pi-trash" class="p-button-danger" />
+							<Button label="Delete" icon="pi pi-trash" class="p-button-danger" @click="confirmDeleteSelected" :disabled="!selectedModels || !selectedModels.length" />
 						</div>
 					</template>
 				</Toolbar>
 
-				<DataTable ref="dt" :value="models" v-model:selection="selectedModel" dataKey="id" :paginator="true" :rows="10" :filters="filters"
-							paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown" :rowsPerPageOptions="[5,10,25]"
-							currentPageReportTemplate="Showing {first} to {last} of {totalRecords} models" responsiveLayout="scroll">
+				<DataTable
+                    ref="dt"
+                    :value="datatable.data"
+                    :lazy="true"
+                    dataKey="id"
+                    v-model:selection="selectedModel"
+                    :paginator="true"
+                    :rows="10"
+                    :loading="datatable.loading"
+                    :total-records="datatable.totalRecords"
+                    v-model="datatable.filters"
+					paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                    :rowsPerPageOptions="[5,10,25]"
+					currentPageReportTemplate="Showing {first} to {last} of {totalRecords} models"
+                    responsiveLayout="scroll"
+                    @page="onPage($event)"
+                    @sort="onSort($event)"
+                    @filter="onSort($event)"
+                    >
 					<template #header>
 						<div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
 							<h5 class="m-0">Manage User</h5>
@@ -48,7 +64,7 @@
 					<Column headerStyle="width:15%;min-width:10rem;">
 						<template #body="slotProps">
 							<Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" @click="editModel(slotProps.data)" />
-							<Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2" @click="confirmDeleteProduct(slotProps.data.id)" />
+							<Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2" @click="confirmDeleteModel(slotProps.data)" />
 						</template>
 					</Column>
 				</DataTable>
@@ -61,7 +77,7 @@
 					</div>
 					<div class="field">
 						<label for="description">Email</label>
-                        <InputText id="name" v-model.trim="model.email" required="true" autofocus :class="{'p-invalid': submitted && !model.email}" />
+                        <InputText type="email1" id="email" v-model.trim="model.email" required="true" autofocus :class="{'p-invalid': submitted && !model.email}" />
                         <small class="p-invalid" v-if="submitted && !model.email">Email is required.</small>
 					</div>
 					<template #footer>
@@ -70,25 +86,25 @@
 					</template>
 				</Dialog>
 
-				<Dialog v-model:visible="deleteProductDialog" :style="{width: '450px'}" header="Confirm" :modal="true">
+				<Dialog v-model:visible="deleteModelDialog" :style="{width: '450px'}" header="Confirm" :modal="true">
 					<div class="flex align-items-center justify-content-center">
 						<i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-						<span v-if="product">Are you sure you want to delete <b>{{product.name}}</b>?</span>
+						<span v-if="model">Are you sure you want to delete <b>{{model.name}}</b>?</span>
 					</div>
 					<template #footer>
-						<Button label="No" icon="pi pi-times" class="p-button-text" @click="deleteProductDialog = false"/>
-						<Button label="Yes" icon="pi pi-check" class="p-button-text" @click="deleteProduct" />
+						<Button label="No" icon="pi pi-times" class="p-button-text" @click="deleteModelDialog = false"/>
+						<Button label="Yes" icon="pi pi-check" class="p-button-text" @click="deleteModel" />
 					</template>
 				</Dialog>
 
-				<Dialog v-model:visible="deleteProductsDialog" :style="{width: '450px'}" header="Confirm" :modal="true">
+				<Dialog v-model:visible="deleteModelsDialog" :style="{width: '450px'}" header="Confirm" :modal="true">
 					<div class="flex align-items-center justify-content-center">
 						<i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-						<span v-if="product">Are you sure you want to delete the selected products?</span>
+						<span v-if="model">Are you sure you want to delete the selected models?</span>
 					</div>
 					<template #footer>
-						<Button label="No" icon="pi pi-times" class="p-button-text" @click="deleteProductsDialog = false"/>
-						<Button label="Yes" icon="pi pi-check" class="p-button-text" @click="deleteSelectedProducts" />
+						<Button label="No" icon="pi pi-times" class="p-button-text" @click="deleteModelsDialog = false"/>
+						<Button label="Yes" icon="pi pi-check" class="p-button-text" @click="deleteSelectedModels" />
 					</template>
 				</Dialog>
 			</div>
@@ -164,11 +180,13 @@ export default {
                 file: null
             }),
             selectedModel: null,
-            deleteDialog: false,
-            deletingModel: false,
             model: {},
             modelDialog: false,
-            models: null
+            models: null,
+			deleteModelDialog: false,
+			deleteModelsDialog: false,
+			selectedModels: null,
+            submitted: false
         }
 	},
 	datatableService: null,
@@ -190,12 +208,19 @@ export default {
 	methods: {
         loadLazyData() {
             this.datatable.loading = true;
-            this.datatableService.getData(this.route('users.datatable'), this.datatable.lazyParams).then(data => {
+            this.datatableService.getData(this.route('user.index'), this.datatable.lazyParams).then(data => {
                 this.datatable.data = data.data;
                 this.datatable.totalRecords = data.total;
                 this.datatable.loading = false;
-                this.models = data.data;
             });
+        },
+        onPage(event){
+            this.datatable.lazyParams = event;
+            this.loadLazyData();
+        },
+        onSort(event){
+            this.datatable.lazyParams = event;
+            this.loadLazyData();
         },
 		formatCurrency(value) {
 			if(value)
@@ -213,47 +238,46 @@ export default {
 		},
 		saveModel() {
 			this.submitted = true;
-			if (this.model.name.trim()) {
+			if (this.model) {
 			    if (this.model.id) {
 				    this.models[this.findIndexById(this.model.id)] = this.model;
 
-                    this.$inertia.put('user.update', this.model), {
+                    this.$inertia.put('api/user', this.model), {
                         onSuccess: () => {
                             this.$toast.add({severity:'success', summary: 'Successful', detail: 'User Updated', life: 3000});
                         },
                     }
 				}
 				else {
-                    this.$inertia.post('user.create', this.model), {
+                    this.$inertia.post('api/user', this.model), {
                         onSuccess: () => {
                             this.$toast.add({severity:'success', summary: 'Successful', detail: 'User Created', life: 3000});
                         },
                     }
-
-					this.model.push(this.model);
 				}
 				this.modelDialog = false;
 				this.model = {};
 			}
+            this.loadLazyData();
 		},
 		editModel(model) {
 			this.model = {...model};
 			this.modelDialog = true;
 		},
-		confirmDeleteProduct(product) {
-			this.product = product;
-			this.deleteProductDialog = true;
+		confirmDeleteModel(model) {
+			this.model = model;
+			this.deleteModelDialog = true;
 		},
-		deleteProduct() {
-			this.products = this.products.filter(val => val.id !== this.product.id);
-			this.deleteProductDialog = false;
-			this.product = {};
-			this.$toast.add({severity:'success', summary: 'Successful', detail: 'Product Deleted', life: 3000});
+		deleteModel() {
+			this.models = this.models.filter(val => val.id !== this.model.id);
+			this.deleteModelDialog = false;
+			this.model = {};
+			this.$toast.add({severity:'success', summary: 'Successful', detail: 'Model Deleted', life: 3000});
 		},
 		findIndexById(id) {
 			let index = -1;
-			for (let i = 0; i < this.products.length; i++) {
-				if (this.products[i].id === id) {
+			for (let i = 0; i < this.models.length; i++) {
+				if (this.models[i].id === id) {
 					index = i;
 					break;
 				}
@@ -272,13 +296,13 @@ export default {
 			this.$refs.dt.exportCSV();
 		},
 		confirmDeleteSelected() {
-			this.deleteProductsDialog = true;
+			this.deleteModelsDialog = true;
 		},
-		deleteSelectedProducts() {
-			this.products = this.products.filter(val => !this.selectedProducts.includes(val));
-			this.deleteProductsDialog = false;
-			this.selectedProducts = null;
-			this.$toast.add({severity:'success', summary: 'Successful', detail: 'Products Deleted', life: 3000});
+		deleteSelectedModels() {
+			this.models = this.models.filter(val => !this.selectedModels.includes(val));
+			this.deleteModelsDialog = false;
+			this.selectedModels = null;
+			this.$toast.add({severity:'success', summary: 'Successful', detail: 'Models Deleted', life: 3000});
 		},
 		initFilters() {
             this.filters = {
