@@ -165,7 +165,10 @@ export default {
                     'global': {value: null, matchMode: FilterMatchMode.CONTAINS},
                     'status': {value: null, matchMode: FilterMatchMode.EQUALS},
                 },
-                lazyParams: {}
+                lazyParams: {
+                    'global': {value: null, matchMode: FilterMatchMode.CONTAINS},
+                    'status': {value: null, matchMode: FilterMatchMode.EQUALS},
+                }
             },
             menuItems: [
                 {

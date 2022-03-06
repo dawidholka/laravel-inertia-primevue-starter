@@ -153,7 +153,7 @@ export default {
     methods: {
         loadLazyData() {
             this.datatable.loading = true;
-            this.datatableService.getData(this.route('users.datatable'), this.datatable.lazyParams).then(data => {
+            this.datatableService.getData(this.route('user.index'), this.datatable.lazyParams).then(data => {
                 this.datatable.data = data.data;
                 this.datatable.totalRecords = data.total;
                 this.datatable.loading = false;
