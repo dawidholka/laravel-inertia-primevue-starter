@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Inertia\Inertia;
 
 class UserController extends Controller
 {
@@ -22,15 +23,14 @@ class UserController extends Controller
     public function store(
         Request    $request,
         CreateUser $createUser
-    ): JsonResponse
+    )
     {
         //abort_if(!auth()->user()->admin, 403);
-        dd(auth()->user());
 
         $request->validate([
             'name' => ['required', 'string'],
             'email' => ['required', 'email', 'unique:users,email'],
-            'password' => ['required', 'string']
+            'password' => ['nullable', 'string']
         ]);
 
         $user = $createUser->execute(new UserDTO([
@@ -40,7 +40,9 @@ class UserController extends Controller
         ]));
 
         return response()->json([
+            'success' => true,
             'message' => 'User created successfully',
+            'data'    => $user
         ]);
     }
 
@@ -65,7 +67,10 @@ class UserController extends Controller
                 Hash::make($request['password']) : null,
         ]));
 
-        return response()->json(['message' => 'User updated successfully']);
+        return response()->json([
+            'success' => true,
+            'message' => 'User updated successfully',
+        ]);
     }
 
     public function destroy(User $user): JsonResponse

@@ -133,6 +133,7 @@ import RadioButton from 'primevue/radiobutton';
 import Dialog from 'primevue/dialog';
 import DatatableService from '../../Services/DatatableService';
 import { Inertia } from '@inertiajs/inertia';
+import axios from 'axios';
 
 export default {
     name: "Index",
@@ -242,23 +243,28 @@ export default {
 			    if (this.model.id) {
 				    this.models[this.findIndexById(this.model.id)] = this.model;
 
-                    this.$inertia.put('api/user', this.model), {
-                        onSuccess: () => {
-                            this.$toast.add({severity:'success', summary: 'Successful', detail: 'User Updated', life: 3000});
-                        },
-                    }
+                    axios.put('api/user', this.model)
+                    .then(response => {
+                        this.$toast.add({severity:'success', summary: 'Successful', detail: 'User Updated', life: 3000});
+                    })
+                    .catch(error => {
+                        this.$toast.add({severity:'error', summary: 'Error', detail: 'User not updated', life: 3000});
+                    });
 				}
 				else {
-                    this.$inertia.post('api/user', this.model), {
-                        onSuccess: () => {
-                            this.$toast.add({severity:'success', summary: 'Successful', detail: 'User Created', life: 3000});
-                        },
-                    }
+                    axios.post('api/user', this.model)
+                    .then(response => {
+                        this.model = response.data.data;
+                        this.datatable.data.unshift(this.model);
+                        this.$toast.add({severity:'success', summary: 'Successful', detail: 'User Created', life: 3000});
+                    })
+                    .catch(error => {
+                        this.$toast.add({severity:'error', summary: 'Error', detail: 'User not created', life: 3000});
+                    });
 				}
 				this.modelDialog = false;
 				this.model = {};
 			}
-            this.loadLazyData();
 		},
 		editModel(model) {
 			this.model = {...model};
