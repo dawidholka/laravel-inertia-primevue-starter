@@ -1,19 +1,32 @@
 <template>
     <Head title="User Management"></Head>
-	<div class="grid">
-		<div class="col-12">
-			<div class="card">
-				<Toast/>
-				<Toolbar class="mb-4">
-					<template v-slot:start>
-						<div class="my-2">
-							<Button label="New" icon="pi pi-plus" class="p-button-success mr-2" @click="openNew" />
-							<Button label="Delete" icon="pi pi-trash" class="p-button-danger" @click="confirmDeleteSelected" :disabled="!selectedModels || !selectedModels.length" />
-						</div>
-					</template>
-				</Toolbar>
+    <div class="grid">
+        <div class="col-12">
+            <div class="card">
+                <Toast />
+                <Toolbar class="mb-4">
+                    <template v-slot:start>
+                        <div class="my-2">
+                            <Button
+                                label="New"
+                                icon="pi pi-plus"
+                                class="p-button-success mr-2"
+                                @click="openNew"
+                            />
+                            <Button
+                                label="Delete"
+                                icon="pi pi-trash"
+                                class="p-button-danger"
+                                @click="confirmDeleteSelected"
+                                :disabled="
+                                    !selectedModels || !selectedModels.length
+                                "
+                            />
+                        </div>
+                    </template>
+                </Toolbar>
 
-				<DataTable
+                <DataTable
                     ref="dt"
                     :value="datatable.data"
                     :lazy="true"
@@ -21,119 +34,231 @@
                     v-model:selection="selectedModel"
                     :paginator="true"
                     :rows="10"
+                    :globalFilterFields="['name']"
                     :loading="datatable.loading"
                     :total-records="datatable.totalRecords"
-                    v-model="datatable.filters"
-					paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                    :rowsPerPageOptions="[5,10,25]"
-					currentPageReportTemplate="Showing {first} to {last} of {totalRecords} models"
+                    v-model:filters="datatable.filters"
+                    paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                    :rowsPerPageOptions="[5, 10, 25]"
+                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} models"
                     responsiveLayout="scroll"
                     @page="onPage($event)"
                     @sort="onSort($event)"
-                    @filter="onSort($event)"
-                    >
-					<template #header>
-						<div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-							<h5 class="m-0">Manage User</h5>
-							<span class="block mt-2 md:mt-0 p-input-icon-left">
+                >
+                    <template #header>
+                        <div
+                            class="flex flex-column md:flex-row md:justify-content-between md:align-items-center"
+                        >
+                            <h5 class="m-0">Manage User</h5>
+                            <span class="block mt-2 md:mt-0 p-input-icon-left">
                                 <i class="pi pi-search" />
-                                <InputText v-model="filters['global'].value" placeholder="Search..." />
+                                <InputText
+                                    @change="onFilter($event)"
+                                    v-model="datatable.filters['global'].value"
+                                    placeholder="Search..."
+                                />
                             </span>
-						</div>
-					</template>
+                            <span class="text-luthgi">
+                                {{ datatable.filters["global"].value }}
+                            </span>
+                        </div>
+                    </template>
 
-					<Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-					<Column field="code" header="Code" :sortable="true" headerStyle="width:5%; min-width:10rem;">
-						<template #body="slotProps">
-							<span class="p-column-title">Id</span>
-							{{slotProps.data.id}}
-						</template>
-					</Column>
-					<Column field="name" header="Name" :sortable="true" headerStyle="width:40%; min-width:10rem;">
-						<template #body="slotProps">
-							<span class="p-column-title">Name</span>
-							{{slotProps.data.name}}
-						</template>
-					</Column>
-                    <Column field="email" header="Email" :sortable="true" headerStyle="width:40%; min-width:10rem;">
-						<template #body="slotProps">
-							<span class="p-column-title">Email</span>
-							{{slotProps.data.email}}
-						</template>
-					</Column>
-					<Column headerStyle="width:15%;min-width:10rem;">
-						<template #body="slotProps">
-							<Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" @click="editModel(slotProps.data)" />
-							<Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2" @click="confirmDeleteModel(slotProps.data)" />
-						</template>
-					</Column>
-				</DataTable>
+                    <Column
+                        selectionMode="multiple"
+                        headerStyle="width: 3rem"
+                    ></Column>
+                    <Column
+                        field="code"
+                        header="Code"
+                        :sortable="true"
+                        headerStyle="width:5%; min-width:10rem;"
+                    >
+                        <template #body="slotProps">
+                            <span class="p-column-title">Id</span>
+                            {{ slotProps.data.id }}
+                        </template>
+                    </Column>
+                    <Column
+                        field="name"
+                        header="Name"
+                        :sortable="true"
+                        headerStyle="width:40%; min-width:10rem;"
+                    >
+                        <template #body="slotProps">
+                            <span class="p-column-title">Name</span>
+                            {{ slotProps.data.name }}
+                        </template>
+                    </Column>
+                    <Column
+                        field="email"
+                        header="Email"
+                        :sortable="true"
+                        headerStyle="width:40%; min-width:10rem;"
+                    >
+                        <template #body="slotProps">
+                            <span class="p-column-title">Email</span>
+                            {{ slotProps.data.email }}
+                        </template>
+                    </Column>
+                    <Column headerStyle="width:15%;min-width:10rem;">
+                        <template #body="slotProps">
+                            <Button
+                                icon="pi pi-pencil"
+                                class="p-button-rounded p-button-success mr-2"
+                                @click="editModel(slotProps.data)"
+                            />
+                            <Button
+                                icon="pi pi-trash"
+                                class="p-button-rounded p-button-warning mt-2"
+                                @click="confirmDeleteModel(slotProps.data)"
+                            />
+                        </template>
+                    </Column>
+                </DataTable>
 
-				<Dialog v-model:visible="modelDialog" :style="{width: '450px'}" header="User Detail" :modal="true" class="p-fluid">
-					<div class="field">
-						<label for="name">Name</label>
-						<InputText id="name" v-model.trim="model.name" required="true" autofocus :class="{'p-invalid': submitted && !model.name}" />
-						<small class="p-invalid" v-if="submitted && !model.name">Name is required.</small>
-					</div>
-					<div class="field">
-						<label for="description">Email</label>
-                        <InputText type="email1" id="email" v-model.trim="model.email" required="true" autofocus :class="{'p-invalid': submitted && !model.email}" />
-                        <small class="p-invalid" v-if="submitted && !model.email">Email is required.</small>
-					</div>
-					<template #footer>
-						<Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="hideDialog"/>
-						<Button label="Save" icon="pi pi-check" class="p-button-text" @click="saveModel" />
-					</template>
-				</Dialog>
+                <Dialog
+                    v-model:visible="modelDialog"
+                    :style="{ width: '450px' }"
+                    header="User Detail"
+                    :modal="true"
+                    class="p-fluid"
+                >
+                    <div class="field">
+                        <label for="name">Name</label>
+                        <InputText
+                            id="name"
+                            v-model.trim="model.name"
+                            required="true"
+                            autofocus
+                            :class="{ 'p-invalid': submitted && !model.name }"
+                        />
+                        <small class="p-invalid" v-if="submitted && !model.name"
+                            >Name is required.</small
+                        >
+                    </div>
+                    <div class="field">
+                        <label for="description">Email</label>
+                        <InputText
+                            type="email1"
+                            id="email"
+                            v-model.trim="model.email"
+                            required="true"
+                            autofocus
+                            :class="{ 'p-invalid': submitted && !model.email }"
+                        />
+                        <small
+                            class="p-invalid"
+                            v-if="submitted && !model.email"
+                            >Email is required.</small
+                        >
+                    </div>
+                    <template #footer>
+                        <Button
+                            label="Cancel"
+                            icon="pi pi-times"
+                            class="p-button-text"
+                            @click="hideDialog"
+                        />
+                        <Button
+                            label="Save"
+                            icon="pi pi-check"
+                            class="p-button-text"
+                            @click="saveModel"
+                        />
+                    </template>
+                </Dialog>
 
-				<Dialog v-model:visible="deleteModelDialog" :style="{width: '450px'}" header="Confirm" :modal="true">
-					<div class="flex align-items-center justify-content-center">
-						<i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-						<span v-if="model">Are you sure you want to delete <b>{{model.name}}</b>?</span>
-					</div>
-					<template #footer>
-						<Button label="No" icon="pi pi-times" class="p-button-text" @click="deleteModelDialog = false"/>
-						<Button label="Yes" icon="pi pi-check" class="p-button-text" @click="deleteModel" />
-					</template>
-				</Dialog>
+                <Dialog
+                    v-model:visible="deleteModelDialog"
+                    :style="{ width: '450px' }"
+                    header="Confirm"
+                    :modal="true"
+                >
+                    <div class="flex align-items-center justify-content-center">
+                        <i
+                            class="pi pi-exclamation-triangle mr-3"
+                            style="font-size: 2rem"
+                        />
+                        <span v-if="model"
+                            >Are you sure you want to delete
+                            <b>{{ model.name }}</b
+                            >?</span
+                        >
+                    </div>
+                    <template #footer>
+                        <Button
+                            label="No"
+                            icon="pi pi-times"
+                            class="p-button-text"
+                            @click="deleteModelDialog = false"
+                        />
+                        <Button
+                            label="Yes"
+                            icon="pi pi-check"
+                            class="p-button-text"
+                            @click="deleteModel"
+                        />
+                    </template>
+                </Dialog>
 
-				<Dialog v-model:visible="deleteModelsDialog" :style="{width: '450px'}" header="Confirm" :modal="true">
-					<div class="flex align-items-center justify-content-center">
-						<i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-						<span v-if="model">Are you sure you want to delete the selected models?</span>
-					</div>
-					<template #footer>
-						<Button label="No" icon="pi pi-times" class="p-button-text" @click="deleteModelsDialog = false"/>
-						<Button label="Yes" icon="pi pi-check" class="p-button-text" @click="deleteSelectedModels" />
-					</template>
-				</Dialog>
-			</div>
-		</div>
-	</div>
-
+                <Dialog
+                    v-model:visible="deleteModelsDialog"
+                    :style="{ width: '450px' }"
+                    header="Confirm"
+                    :modal="true"
+                >
+                    <div class="flex align-items-center justify-content-center">
+                        <i
+                            class="pi pi-exclamation-triangle mr-3"
+                            style="font-size: 2rem"
+                        />
+                        <span v-if="model"
+                            >Are you sure you want to delete the selected
+                            models?</span
+                        >
+                    </div>
+                    <template #footer>
+                        <Button
+                            label="No"
+                            icon="pi pi-times"
+                            class="p-button-text"
+                            @click="deleteModelsDialog = false"
+                        />
+                        <Button
+                            label="Yes"
+                            icon="pi pi-check"
+                            class="p-button-text"
+                            @click="deleteSelectedModels"
+                        />
+                    </template>
+                </Dialog>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
 import AppLayout from "../../Layouts/AppLayout";
-import {FilterMatchMode} from 'primevue/api';
-import { Head } from '@inertiajs/inertia-vue3';
-import Checkbox from 'primevue/checkbox';
-import Button from 'primevue/button';
-import InputText from 'primevue/inputtext';
-import Password from 'primevue/password';
-import Message from 'primevue/message';
-import Toolbar from 'primevue/toolbar';
-import Toast from 'primevue/toast';
-import FileUpload from 'primevue/fileupload';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
-import InputNumber from 'primevue/inputnumber';
-import Dropdown from 'primevue/dropdown';
-import RadioButton from 'primevue/radiobutton';
-import Dialog from 'primevue/dialog';
-import DatatableService from '../../Services/DatatableService';
-import { Inertia } from '@inertiajs/inertia';
-import axios from 'axios';
+import { FilterMatchMode } from "primevue/api";
+import { Head } from "@inertiajs/inertia-vue3";
+import Checkbox from "primevue/checkbox";
+import Button from "primevue/button";
+import InputText from "primevue/inputtext";
+import Password from "primevue/password";
+import Message from "primevue/message";
+import Toolbar from "primevue/toolbar";
+import Toast from "primevue/toast";
+import FileUpload from "primevue/fileupload";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
+import InputNumber from "primevue/inputnumber";
+import Dropdown from "primevue/dropdown";
+import RadioButton from "primevue/radiobutton";
+import Dialog from "primevue/dialog";
+import DatatableService from "../../Services/DatatableService";
+import { Inertia } from "@inertiajs/inertia";
+import axios from "axios";
 
 export default {
     name: "Index",
@@ -153,155 +278,213 @@ export default {
         InputNumber,
         Dropdown,
         RadioButton,
-        Dialog
+        Dialog,
     },
-	data() {
-		return {
+    data() {
+        return {
+            searchFilter: "",
             datatable: {
                 loading: true,
                 totalRecords: 0,
                 data: null,
                 filters: {
-                    'global': {value: null, matchMode: FilterMatchMode.CONTAINS},
-                    'status': {value: null, matchMode: FilterMatchMode.EQUALS},
+                    global: {
+                        value: null,
+                        matchMode: FilterMatchMode.CONTAINS,
+                    },
+                    status: { value: null, matchMode: FilterMatchMode.EQUALS },
                 },
                 lazyParams: {
-                    'global': {value: null, matchMode: FilterMatchMode.CONTAINS},
-                    'status': {value: null, matchMode: FilterMatchMode.EQUALS},
-                }
+                    global: {
+                        value: null,
+                        matchMode: FilterMatchMode.CONTAINS,
+                    },
+                    status: { value: null, matchMode: FilterMatchMode.EQUALS },
+                },
             },
             menuItems: [
                 {
-                    label: 'Dodaj użytkownika',
-                    icon: 'pi pi-fw pi-plus',
+                    label: "Dodaj użytkownika",
+                    icon: "pi pi-fw pi-plus",
                     command: () => {
-                        this.$inertia.get(this.route('users.create'));
+                        this.$inertia.get(this.route("users.create"));
                     },
                 },
             ],
             importDialog: false,
             importForm: this.$inertia.form({
-                file: null
+                file: null,
             }),
             selectedModel: null,
             model: {},
             modelDialog: false,
             models: null,
-			deleteModelDialog: false,
-			deleteModelsDialog: false,
-			selectedModels: null,
-            submitted: false
-        }
-	},
-	datatableService: null,
-	created() {
+            deleteModelDialog: false,
+            deleteModelsDialog: false,
+            selectedModels: null,
+            submitted: false,
+        };
+    },
+    datatableService: null,
+    created() {
         this.datatableService = new DatatableService();
-		this.initFilters();
-	},
-	mounted() {
+        this.initFilters();
+    },
+    mounted() {
         this.datatable.loading = true;
         this.datatable.lazyParams = {
             first: 0,
             rows: this.$refs.dt.rows,
-            sortField: 'id',
+            sortField: "id",
             sortOrder: -1,
-            filters: this.datatable.filters
+            filters: this.datatable.filters,
         };
         this.loadLazyData();
-	},
-	methods: {
+    },
+    // watch: {
+    //     searchFilter(val) {
+    //         val && this.onFilter(val);
+    //     },
+    // },
+    methods: {
         loadLazyData() {
             this.datatable.loading = true;
-            this.datatableService.getData(this.route('user.index'), this.datatable.lazyParams).then(data => {
-                this.datatable.data = data.data;
-                this.datatable.totalRecords = data.total;
-                this.datatable.loading = false;
+            this.datatableService
+                .getData(this.route("user.index"), this.datatable.lazyParams)
+                .then((data) => {
+                    this.datatable.data = data.data;
+                    this.datatable.totalRecords = data.total;
+                    this.datatable.loading = false;
+                });
+        },
+        onPage(event) {
+            this.datatable.lazyParams = event;
+            this.loadLazyData();
+        },
+        onSort(event) {
+            this.datatable.lazyParams = event;
+            this.loadLazyData();
+        },
+        onFilter(event) {
+            this.datatable.lazyParams = event;
+            this.loadLazyData();
+        },
+        openNew() {
+            this.model = {};
+            this.submitted = false;
+            this.modelDialog = true;
+        },
+        hideDialog() {
+            this.modelDialog = false;
+            this.submitted = false;
+        },
+        saveModel() {
+            this.submitted = true;
+            if (this.model) {
+                if (this.model.id) {
+                    axios
+                        .put("api/user/" + this.model.id, this.model)
+                        .then((response) => {
+                            this.$toast.add({
+                                severity: "success",
+                                summary: "Successful",
+                                detail: "User Updated",
+                                life: 3000,
+                            });
+                            this.loadLazyData();
+                        })
+                        .catch((error) => {
+                            this.$toast.add({
+                                severity: "error",
+                                summary: "Error",
+                                detail: "User not updated",
+                                life: 3000,
+                            });
+                        });
+                }
+                // If empty then add new record
+                else {
+                    axios
+                        .post("api/user", this.model)
+                        .then((response) => {
+                            this.model = response.data.data;
+                            this.datatable.data.unshift(this.model);
+                            this.$toast.add({
+                                severity: "success",
+                                summary: "Successful",
+                                detail: "User Created",
+                                life: 3000,
+                            });
+                        })
+                        .catch((error) => {
+                            this.$toast.add({
+                                severity: "error",
+                                summary: "Error",
+                                detail: "User not created",
+                                life: 3000,
+                            });
+                        });
+                }
+                this.modelDialog = false;
+                this.model = {};
+            }
+        },
+        editModel(model) {
+            this.model = { ...model };
+            this.modelDialog = true;
+        },
+        confirmDeleteModel(model) {
+            this.model = model;
+            this.deleteModelDialog = true;
+        },
+        deleteModel() {
+            axios
+                .delete("api/user/" + this.model.id)
+                .then((response) => {
+                    this.$toast.add({
+                        severity: "success",
+                        summary: "Successful",
+                        detail: "User Deleted",
+                        life: 3000,
+                    });
+                    this.deleteModelDialog = false;
+                    this.model = {};
+                    this.loadLazyData();
+                })
+                .catch((error) => {
+                    this.$toast.add({
+                        severity: "error",
+                        summary: "Error",
+                        detail: "User not deleted",
+                        life: 3000,
+                    });
+                });
+        },
+        confirmDeleteSelected() {
+            this.deleteModelsDialog = true;
+        },
+        deleteSelectedModels() {
+            this.models = this.models.filter(
+                (val) => !this.selectedModels.includes(val)
+            );
+            this.deleteModelsDialog = false;
+            this.selectedModels = null;
+            this.$toast.add({
+                severity: "success",
+                summary: "Successful",
+                detail: "Models Deleted",
+                life: 3000,
             });
         },
-        onPage(event){
-            this.datatable.lazyParams = event;
-            this.loadLazyData();
+        initFilters() {
+            this.datatable.filters = {
+                global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+            };
         },
-        onSort(event){
-            this.datatable.lazyParams = event;
-            this.loadLazyData();
-        },
-		openNew() {
-			this.model = {};
-			this.submitted = false;
-			this.modelDialog = true;
-		},
-		hideDialog() {
-			this.modelDialog = false;
-			this.submitted = false;
-		},
-		saveModel() {
-			this.submitted = true;
-			if (this.model) {
-			    if (this.model.id) {
-                    axios.put('api/user/'+this.model.id, this.model)
-                    .then(response => {
-                        this.$toast.add({severity:'success', summary: 'Successful', detail: 'User Updated', life: 3000});
-                        this.loadLazyData();
-                    })
-                    .catch(error => {
-                        this.$toast.add({severity:'error', summary: 'Error', detail: 'User not updated', life: 3000});
-                    });
-				}
-                // If empty then add new record
-				else {
-                    axios.post('api/user', this.model)
-                    .then(response => {
-                        this.model = response.data.data;
-                        this.datatable.data.unshift(this.model);
-                        this.$toast.add({severity:'success', summary: 'Successful', detail: 'User Created', life: 3000});
-                    })
-                    .catch(error => {
-                        this.$toast.add({severity:'error', summary: 'Error', detail: 'User not created', life: 3000});
-                    });
-				}
-				this.modelDialog = false;
-				this.model = {};
-			}
-		},
-		editModel(model) {
-			this.model = {...model};
-			this.modelDialog = true;
-		},
-		confirmDeleteModel(model) {
-			this.model = model;
-			this.deleteModelDialog = true;
-		},
-		deleteModel() {
-            axios.delete('api/user/'+this.model.id)
-                    .then(response => {
-                        this.$toast.add({severity:'success', summary: 'Successful', detail: 'User Deleted', life: 3000});
-                        this.deleteModelDialog = false;
-			            this.model = {};
-                        this.loadLazyData();
-                    })
-                    .catch(error => {
-                        this.$toast.add({severity:'error', summary: 'Error', detail: 'User not deleted', life: 3000});
-                    });
-		},
-		confirmDeleteSelected() {
-			this.deleteModelsDialog = true;
-		},
-		deleteSelectedModels() {
-			this.models = this.models.filter(val => !this.selectedModels.includes(val));
-			this.deleteModelsDialog = false;
-			this.selectedModels = null;
-			this.$toast.add({severity:'success', summary: 'Successful', detail: 'Models Deleted', life: 3000});
-		},
-		initFilters() {
-            this.filters = {
-                'global': {value: null, matchMode: FilterMatchMode.CONTAINS},
-            }
-        }
-	}
-}
+    },
+};
 </script>
 
 <style scoped lang="scss">
-@import '../../../assets/demo/badges.scss';
+@import "../../../assets/demo/badges.scss";
 </style>
