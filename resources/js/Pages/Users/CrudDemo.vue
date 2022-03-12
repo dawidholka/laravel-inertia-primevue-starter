@@ -61,9 +61,6 @@
                                     placeholder="Search..."
                                 />
                             </span>
-                            <span class="text-luthgi">
-                                {{ filters["global"].value }}
-                            </span>
                         </div>
                     </template>
 
