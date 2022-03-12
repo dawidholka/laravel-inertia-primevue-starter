@@ -28,26 +28,20 @@
 
                 <DataTable
                     ref="dt"
-                    :value="models"
+                    :value="datatable.data"
                     :Lazy="true"
-                    dataKey="id"
-                    v-model:selection="selectedModels"
+                    data-key="id"
                     :paginator="true"
                     :rows="10"
-                    :totalRecords="totalRecords"
-                    :loading="loading"
-                    v-model:filters="filters"
+                    :total-records="datatable.totalRecords"
+                    :loading="datatable.loading"
+                    v-model:filters="datatable.filters"
                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                     :rowsPerPageOptions="[5, 10, 25]"
                     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} models"
                     responsiveLayout="scroll"
-                    :selectAll="selectAll"
-                    @select-all-change="onSelectAllChange"
-                    @row-select="onRowSelect"
-                    @row-unselect="onRowUnselect"
                     @page="onPage($event)"
                     @sort="onSort($event)"
-                    @filter="onFilter($event)"
                 >
                     <template #header>
                         <div
@@ -63,7 +57,6 @@
                             </span>
                         </div>
                     </template>
-
                     <Column
                         selectionMode="multiple"
                         headerStyle="width: 3rem"
@@ -116,7 +109,6 @@
                         </template>
                     </Column>
                 </DataTable>
-
                 <Dialog
                     v-model:visible="modelDialog"
                     :style="{ width: '450px' }"
@@ -168,7 +160,6 @@
                         />
                     </template>
                 </Dialog>
-
                 <Dialog
                     v-model:visible="deleteModelDialog"
                     :style="{ width: '450px' }"
@@ -201,7 +192,6 @@
                         />
                     </template>
                 </Dialog>
-
                 <Dialog
                     v-model:visible="deleteModelsDialog"
                     :style="{ width: '450px' }"
@@ -285,7 +275,10 @@ export default {
             loading: false,
             totalRecords: 0,
             searchFilter: "",
-            filters: "",
+            filters: {
+                global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+                status: { value: null, matchMode: FilterMatchMode.EQUALS },
+            },
             selectedModel: null,
             model: {},
             modelDialog: false,
@@ -295,64 +288,95 @@ export default {
             selectedModels: null,
             submitted: false,
             lazyParams: {},
+            selectAll: false,
+
+            datatable: {
+                loading: true,
+                totalRecords: 0,
+                data: null,
+                filters: {
+                    global: {
+                        value: null,
+                        matchMode: FilterMatchMode.CONTAINS,
+                    },
+                    status: { value: null, matchMode: FilterMatchMode.EQUALS },
+                },
+                lazyParams: {},
+            },
         };
     },
     datatableService: null,
     created() {
         this.datatableService = new DatatableService();
-        this.initFilters();
     },
     mounted() {
-        this.lazyParams = {
+        this.loading = true;
+        (this.lazyParams = {
             first: 0,
             rows: this.$refs.dt.rows,
             sortField: "id",
             sortOrder: -1,
             filters: this.filters,
-        },
+        }),
+            (this.datatable.loading = true);
+        this.datatable.lazyParams = {
+            first: 0,
+            rows: this.$refs.dt.rows,
+            sortField: "id",
+            sortOrder: -1,
+            filters: this.datatable.filters,
+        };
         this.loadLazyData();
     },
 
     methods: {
-        loadLazyData(){
+        loadLazyData() {
             this.loading = true;
             this.datatableService
-            .getData('api/user', this.lazyParams)
-            .then((data) => {
-                this.models = data.data;
-                this.totalRecord = data.totalRecord;
-                this.loading = false;
-            });
+                .getData("api/user", this.lazyParams)
+                .then((data) => {
+                    this.models = data.data;
+                    this.totalRecords = data.total;
+                    this.loading = false;
+                });
+
+            this.datatable.loading = true;
+            this.datatableService
+                .getData(this.route("user.index"), this.datatable.lazyParams)
+                .then((data) => {
+                    this.datatable.data = data.data;
+                    this.datatable.totalRecords = data.total;
+                    this.datatable.loading = false;
+                });
         },
-        onPage(event){
+        onPage(event) {
             this.lazyParams = event;
             this.loadLazyData();
         },
-        onSort(event){
+        onSort(event) {
             this.lazyParams = event;
             this.loadLazyData();
         },
-        onFilter(){
+        onFilter() {
             this.lazyParams.filters = this.filters;
             this.loadLazyData();
         },
-        onSelectAllChange(event){
+        onSelectAllChange(event) {
             const selectAll = event.checked;
-            if(selectAll){
-                this.datatableService.getData().then(data => {
+            if (selectAll) {
+                this.datatableService.getData().then((data) => {
                     this.selectAll = true;
                     this.selectedModels = data.data;
                 });
-            }
-            else{
+            } else {
                 this.selectAll = false;
                 this.selectedModels = [];
             }
         },
-        onRowSelect(){
+        onRowSelect() {
             this.selectAll = this.selectedModels.length === this.totalRecord;
         },
-        onRownUnselect(){
+        onRowUnselect() {
             this.selectAll = false;
         },
         openNew() {
@@ -462,7 +486,7 @@ export default {
         },
         initFilters() {
             this.filters = {
-                'global': { value: null, matchMode: FilterMatchMode.CONTAINS },
+                global: { value: null, matchMode: FilterMatchMode.CONTAINS },
             };
         },
     },
