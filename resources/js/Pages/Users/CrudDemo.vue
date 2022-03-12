@@ -28,22 +28,17 @@
 
                 <DataTable
                     ref="dt"
-                    :value="datatable.data"
-                    :lazy="true"
-                    dataKey="id"
-                    v-model:selection="selectedModel"
+                    :value="models"
+                    :Lazy="true"
+                    data-key="id"
+                    v-model:selection="selectedModels"
                     :paginator="true"
                     :rows="10"
-                    :globalFilterFields="['name']"
-                    :loading="datatable.loading"
-                    :total-records="datatable.totalRecords"
-                    v-model:filters="datatable.filters"
+                    :filters="filters"
                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                     :rowsPerPageOptions="[5, 10, 25]"
                     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} models"
                     responsiveLayout="scroll"
-                    @page="onPage($event)"
-                    @sort="onSort($event)"
                 >
                     <template #header>
                         <div
@@ -53,13 +48,9 @@
                             <span class="block mt-2 md:mt-0 p-input-icon-left">
                                 <i class="pi pi-search" />
                                 <InputText
-                                    @change="onFilter($event)"
-                                    v-model="datatable.filters['global'].value"
+                                    v-model="filters['global'].value"
                                     placeholder="Search..."
                                 />
-                            </span>
-                            <span class="text-luthgi">
-                                {{ datatable.filters["global"].value }}
                             </span>
                         </div>
                     </template>
@@ -283,34 +274,8 @@ export default {
     data() {
         return {
             searchFilter: "",
-            datatable: {
-                loading: true,
-                totalRecords: 0,
-                data: null,
-                filters: {
-                    global: {
-                        value: null,
-                        matchMode: FilterMatchMode.CONTAINS,
-                    },
-                    status: { value: null, matchMode: FilterMatchMode.EQUALS },
-                },
-                lazyParams: {
-                    global: {
-                        value: null,
-                        matchMode: FilterMatchMode.CONTAINS,
-                    },
-                    status: { value: null, matchMode: FilterMatchMode.EQUALS },
-                },
-            },
-            menuItems: [
-                {
-                    label: "Dodaj użytkownika",
-                    icon: "pi pi-fw pi-plus",
-                    command: () => {
-                        this.$inertia.get(this.route("users.create"));
-                    },
-                },
-            ],
+            filters: "",
+
             importDialog: false,
             importForm: this.$inertia.form({
                 file: null,
@@ -323,6 +288,13 @@ export default {
             deleteModelsDialog: false,
             selectedModels: null,
             submitted: false,
+            lazyParams: {
+                global: {
+                    value: null,
+                    matchMode: FilterMatchMode.CONTAINS,
+                },
+                status: { value: null, matchMode: FilterMatchMode.EQUALS },
+            },
         };
     },
     datatableService: null,
@@ -331,15 +303,16 @@ export default {
         this.initFilters();
     },
     mounted() {
-        this.datatable.loading = true;
-        this.datatable.lazyParams = {
+        this.lazyParams = {
             first: 0,
             rows: this.$refs.dt.rows,
             sortField: "id",
             sortOrder: -1,
-            filters: this.datatable.filters,
-        };
-        this.loadLazyData();
+            filters: this.filters,
+        },
+            this.datatableService
+                .getData('api/user', this.lazyParams)
+                .then((data) => (this.models = data));
     },
     // watch: {
     //     searchFilter(val) {
@@ -347,28 +320,6 @@ export default {
     //     },
     // },
     methods: {
-        loadLazyData() {
-            this.datatable.loading = true;
-            this.datatableService
-                .getData(this.route("user.index"), this.datatable.lazyParams)
-                .then((data) => {
-                    this.datatable.data = data.data;
-                    this.datatable.totalRecords = data.total;
-                    this.datatable.loading = false;
-                });
-        },
-        onPage(event) {
-            this.datatable.lazyParams = event;
-            this.loadLazyData();
-        },
-        onSort(event) {
-            this.datatable.lazyParams = event;
-            this.loadLazyData();
-        },
-        onFilter(event) {
-            this.datatable.lazyParams = event;
-            this.loadLazyData();
-        },
         openNew() {
             this.model = {};
             this.submitted = false;
@@ -391,7 +342,6 @@ export default {
                                 detail: "User Updated",
                                 life: 3000,
                             });
-                            this.loadLazyData();
                         })
                         .catch((error) => {
                             this.$toast.add({
@@ -449,7 +399,6 @@ export default {
                     });
                     this.deleteModelDialog = false;
                     this.model = {};
-                    this.loadLazyData();
                 })
                 .catch((error) => {
                     this.$toast.add({
@@ -477,8 +426,8 @@ export default {
             });
         },
         initFilters() {
-            this.datatable.filters = {
-                global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+            this.filters = {
+                'global': { value: null, matchMode: FilterMatchMode.CONTAINS },
             };
         },
     },

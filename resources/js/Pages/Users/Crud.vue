@@ -17,9 +17,17 @@
 					</template>
 				</Toolbar>
 
-				<DataTable ref="dt" :value="products" v-model:selection="selectedProducts" dataKey="id" :paginator="true" :rows="10" :filters="filters"
-							paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown" :rowsPerPageOptions="[5,10,25]"
-							currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products" responsiveLayout="scroll">
+				<DataTable ref="dt"
+                        :value="products"
+                        v-model:selection="selectedProducts"
+                        dataKey="id"
+                        :paginator="true"
+                        :rows="10"
+                        :filters="filters"
+						paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                        :rowsPerPageOptions="[5,10,25]"
+						currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
+                        responsiveLayout="scroll">
 					<template #header>
 						<div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
 							<h5 class="m-0">Manage Products</h5>
