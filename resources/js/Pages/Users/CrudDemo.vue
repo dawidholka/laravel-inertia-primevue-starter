@@ -30,15 +30,24 @@
                     ref="dt"
                     :value="models"
                     :Lazy="true"
-                    data-key="id"
+                    dataKey="id"
                     v-model:selection="selectedModels"
                     :paginator="true"
                     :rows="10"
-                    :filters="filters"
+                    :totalRecords="totalRecords"
+                    :loading="loading"
+                    v-model:filters="filters"
                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                     :rowsPerPageOptions="[5, 10, 25]"
                     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} models"
                     responsiveLayout="scroll"
+                    :selectAll="selectAll"
+                    @select-all-change="onSelectAllChange"
+                    @row-select="onRowSelect"
+                    @row-unselect="onRowUnselect"
+                    @page="onPage($event)"
+                    @sort="onSort($event)"
+                    @filter="onFilter($event)"
                 >
                     <template #header>
                         <div
@@ -273,13 +282,10 @@ export default {
     },
     data() {
         return {
+            loading: false,
+            totalRecords: 0,
             searchFilter: "",
             filters: "",
-
-            importDialog: false,
-            importForm: this.$inertia.form({
-                file: null,
-            }),
             selectedModel: null,
             model: {},
             modelDialog: false,
@@ -288,13 +294,7 @@ export default {
             deleteModelsDialog: false,
             selectedModels: null,
             submitted: false,
-            lazyParams: {
-                global: {
-                    value: null,
-                    matchMode: FilterMatchMode.CONTAINS,
-                },
-                status: { value: null, matchMode: FilterMatchMode.EQUALS },
-            },
+            lazyParams: {},
         };
     },
     datatableService: null,
@@ -310,16 +310,51 @@ export default {
             sortOrder: -1,
             filters: this.filters,
         },
-            this.datatableService
-                .getData('api/user', this.lazyParams)
-                .then((data) => (this.models = data));
+        this.loadLazyData();
     },
-    // watch: {
-    //     searchFilter(val) {
-    //         val && this.onFilter(val);
-    //     },
-    // },
+
     methods: {
+        loadLazyData(){
+            this.loading = true;
+            this.datatableService
+            .getData('api/user', this.lazyParams)
+            .then((data) => {
+                this.models = data.data;
+                this.totalRecord = data.totalRecord;
+                this.loading = false;
+            });
+        },
+        onPage(event){
+            this.lazyParams = event;
+            this.loadLazyData();
+        },
+        onSort(event){
+            this.lazyParams = event;
+            this.loadLazyData();
+        },
+        onFilter(){
+            this.lazyParams.filters = this.filters;
+            this.loadLazyData();
+        },
+        onSelectAllChange(event){
+            const selectAll = event.checked;
+            if(selectAll){
+                this.datatableService.getData().then(data => {
+                    this.selectAll = true;
+                    this.selectedModels = data.data;
+                });
+            }
+            else{
+                this.selectAll = false;
+                this.selectedModels = [];
+            }
+        },
+        onRowSelect(){
+            this.selectAll = this.selectedModels.length === this.totalRecord;
+        },
+        onRownUnselect(){
+            this.selectAll = false;
+        },
         openNew() {
             this.model = {};
             this.submitted = false;
