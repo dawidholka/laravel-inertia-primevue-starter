@@ -367,7 +367,6 @@ export default {
             this.loadLazyData();
         },
         onFilter(event) {
-            this.lazyParams = event;
             this.loadLazyData();
         },
         openNew() {

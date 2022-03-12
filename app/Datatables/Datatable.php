@@ -14,7 +14,7 @@ abstract class Datatable
 
     protected bool $includeTrashed = false;
 
-    protected bool $globalFilter = false;
+    protected bool $globalFilter = true;
 
     protected Builder $builder;
 
