@@ -1,18 +1,16 @@
 <template>
     <card class="card">
         <template #title>
-            Sesje przeglądarki
+            Browser Sessions
         </template>
 
         <template #content>
             <div class="mb-3">
-                Zarządzaj aktywnymi sesjami i wyloguj się z nich na innych przeglądarkach i urządzeniach.
+                Manage and log out your active sessions on other browsers and devices.
             </div>
 
             <div class="max-w-xl text-sm text-gray-600">
-                W razie potrzeby możesz wylogować się ze wszystkich innych sesji przeglądarki na wszystkich swoich
-                urządzeniach. Niektóre z ostatnich sesji są wymienione poniżej; jednak lista ta może nie być
-                wyczerpująca. Jeśli uważasz, że Twoje konto zostało naruszone, powinieneś również zaktualizować hasło.
+                If necessary, you may log out of all of your other browser sessions across all of your devices. Some of your recent sessions are listed below; however, this list may not be exhaustive. If you feel your account has been compromised, you should also update your password.
             </div>
 
             <!-- Other Browser Sessions -->
@@ -45,7 +43,7 @@
                                 {{ session.ip_address }},
 
                                 <span class="text-green-500 font-semibold"
-                                      v-if="session.is_current_device">To urządzenie</span>
+                                      v-if="session.is_current_device">This Device</span>
                                 <span v-else>Ostatnia aktywność {{ session.last_active }}</span>
                             </div>
                         </div>

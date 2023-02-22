@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ViewController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Laravel\Fortify\Fortify;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +27,7 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
 })->name('dashboard');
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
-    Route::get('/users/datatable', [UserController::class, 'datatable'])->name('users.datatable');
-    Route::resource('users', UserController::class);
+    Route::get('/users', [ViewController::class,'users'])->name('users');
+    Route::get('/roles', [ViewController::class,'roles'])->name('roles');
+    Route::get('/permissions', [ViewController::class,'permissions'])->name('permissions');
 });

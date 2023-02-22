@@ -1,73 +1,77 @@
 <template>
-    <Head title="Log in" />
+    <Head title="Login" />
+    <div class="surface-0 flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden">
+        <div class="grid justify-content-center p-2 lg:p-0" style="min-width:80%">
+            <div class="col-12 mt-5 xl:mt-0 text-center">
+                <img :src="'images/logo-' + logoColor + '.svg'" alt="Sakai logo" class="mb-5" style="width:81px; height:60px;">
+            </div>
+            <div class="col-12 xl:col-6" style="border-radius:56px; padding:0.3rem; background: linear-gradient(180deg, var(--primary-color), rgba(33, 150, 243, 0) 30%);">
+                <div class="h-full w-full m-0 py-7 px-4" style="border-radius:53px; background: linear-gradient(180deg, var(--surface-50) 38.9%, var(--surface-0));">
+                    <div class="text-center mb-5">
+                        <img src="images/avatar.png" alt="Image" height="50" class="mb-3">
+                        <div class="text-900 text-3xl font-medium mb-3">Welcome, Isabel!</div>
+                        <span class="text-600 font-medium">Sign in to continue</span>
+                    </div>
+                    <transition-group name="p-message" tag="div" v-if="form.errors">
+                        <Message v-for="(error, key) of form.errors" severity="error" :key="key">{{ error }}</Message>
+                    </transition-group>
+                    <div class="w-full md:w-10 mx-auto">
+                        <label for="email1" class="block text-900 text-xl font-medium mb-2">Email</label>
+                        <InputText id="email1"
+                                    v-model="form.email"
+                                    type="text"
+                                    class="w-full mb-3"
+                                    placeholder="Email"
+                                    style="padding:1rem;" />
 
-    <MinimalLayout title="Logowanie">
-        <template #content>
-            <div class="fluid">
-                <div class="field">
-                    <label for="email">
-                        Adres e-mail
-                    </label>
-                    <InputText id="email"
-                               v-model="form.email"
-                               type="email"
-                               required="true"
-                               :class="{'p-invalid': form.errors.email}"
-                               @keyup.enter="submit"
-                    />
-                    <small v-if="form.errors.email" class="p-invalid">
-                        {{ form.errors.email }}
-                    </small>
-                </div>
-                <div class="field">
-                    <label for="password">
-                        Hasło
-                    </label>
-                    <InputText id="email"
-                               v-model="form.password"
-                               required="true"
-                               type="password"
-                               autocomplete="current-password"
-                               @keyup.enter="submit"
-                               :class="{'p-invalid': form.errors.password}"
-                    />
-                    <small v-if="form.errors.password" class="p-invalid">
-                        {{ form.errors.password }}
-                    </small>
-                </div>
-                <div class="field">
-                    <Button label="Zaloguj się"
-                            icon="pi pi-sign-in"
-                            type="submit"
-                            @click="submit"
-                            :loading="form.processing"
-                    />
+                        <label for="password1" class="block text-900 font-medium text-xl mb-2">Password</label>
+                        <Password id="password1"
+                                    v-model="form.password"
+                                    placeholder="Password"
+                                    :toggleMask="true"
+                                    class="w-full mb-3"
+                                    inputClass="w-full"
+                                    inputStyle="padding:1rem"
+                                    @keyup.enter="submit"></Password>
+
+                        <div class="flex align-items-center justify-content-between mb-5">
+                            <div class="flex align-items-center">
+                                <Checkbox id="rememberme1" v-model="checked" :binary="true" class="mr-2"></Checkbox>
+                                <label for="rememberme1">Remember me</label>
+                            </div>
+                            <a :href="route('register')" class="font-medium no-underline ml-2 text-right cursor-pointer" style="color: var(--primary-color)">Register</a>
+                            <a class="font-medium no-underline ml-2 text-right cursor-pointer" style="color: var(--primary-color)">Forgot password?</a>
+                        </div>
+                        <Button type="submit" @click="submit" label="Sign In" class="w-full p-3 text-xl" :loading="form.processing"></button>
+                    </div>
                 </div>
             </div>
-        </template>
-    </MinimalLayout>
+        </div>
+    </div>
 </template>
 
 <script>
-import { Head, Link } from '@inertiajs/inertia-vue3';
-import MinimalLayout from "../../Layouts/MinimalLayout";
+import { Head } from '@inertiajs/inertia-vue3';
+import Checkbox from 'primevue/checkbox';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
+import Password from 'primevue/password';
+import Message from 'primevue/message';
 
 export default {
     components: {
-        MinimalLayout,
-        Head,
-        Link,
         Button,
-        InputText
+        Checkbox,
+        InputText,
+        Password,
+        Message,
+        Head
     },
-
-    props: {
-        canResetPassword: Boolean,
-        status: String
+    computed: {
+        logoColor() {
+            return 'dark';
+        }
     },
-
     data() {
         return {
             form: this.$inertia.form({
@@ -77,7 +81,6 @@ export default {
             })
         }
     },
-
     methods: {
         submit() {
             this.form
@@ -88,7 +91,20 @@ export default {
                 .post(this.route('login'), {
                     onFinish: () => this.form.reset('password'),
                 })
+            console.log(this.form)
         }
     }
 }
 </script>
+
+<style scoped>
+.pi-eye {
+    transform:scale(1.6);
+    margin-right: 1rem;
+}
+
+.pi-eye-slash {
+    transform:scale(1.6);
+    margin-right: 1rem;
+}
+</style>

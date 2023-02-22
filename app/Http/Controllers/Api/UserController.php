@@ -1,52 +1,36 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Actions\Users\CreateUser;
 use App\Actions\Users\UpdateUser;
 use App\Datatables\UserDatatable;
 use App\DTOs\UserDTO;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
-use Inertia\Response;
 
 class UserController extends Controller
 {
-    public function index(): Response
-    {
-        return Inertia::render('Users/Index');
-    }
-
-    public function datatable(
-        Request       $request,
-        UserDatatable $datatable
-    ): JsonResponse
+    public function index(Request $request, UserDatatable $datatable): JsonResponse
     {
         $data = $datatable->make($request);
-
         return response()->json($data);
     }
-
-    public function create(): Response
-    {
-        return Inertia::render('Users/Create');
-    }
-
     public function store(
         Request    $request,
         CreateUser $createUser
-    ): RedirectResponse
+    )
     {
-        abort_if(!auth()->user()->admin, 403);
+        //abort_if(!auth()->user()->admin, 403);
 
         $request->validate([
             'name' => ['required', 'string'],
             'email' => ['required', 'email', 'unique:users,email'],
-            'password' => ['required', 'string']
+            'password' => ['nullable', 'string']
         ]);
 
         $user = $createUser->execute(new UserDTO([
@@ -55,19 +39,10 @@ class UserController extends Controller
             'password' => Hash::make($request['password'])
         ]));
 
-        return redirect()->route('users.index');
-    }
-
-    public function edit(User $user): Response
-    {
-        abort_if(!auth()->user()->admin, 403);
-
-        return Inertia::render('Users/Create', [
-            'pageUser' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-            ]
+        return response()->json([
+            'success' => true,
+            'message' => 'User created successfully',
+            'data'    => $user
         ]);
     }
 
@@ -75,9 +50,9 @@ class UserController extends Controller
         Request    $request,
         User       $user,
         UpdateUser $updateUser
-    ): RedirectResponse
+    ): JsonResponse
     {
-        abort_if(!auth()->user()->admin, 403);
+        // abort_if(!auth()->user()->admin, 403);
 
         $request->validate([
             'name' => ['required', 'string'],
@@ -92,14 +67,17 @@ class UserController extends Controller
                 Hash::make($request['password']) : null,
         ]));
 
-        return redirect()->back();
+        return response()->json([
+            'success' => true,
+            'message' => 'User updated successfully',
+        ]);
     }
 
-    public function destroy(User $user): RedirectResponse
+    public function destroy(User $user): JsonResponse
     {
-        abort_if(!auth()->user()->admin, 403);
+        // abort_if(!auth()->user()->admin, 403);
 
         $user->delete();
-        return redirect()->back();
+        return response()->json(['message' => 'User deleted successfully']);
     }
 }

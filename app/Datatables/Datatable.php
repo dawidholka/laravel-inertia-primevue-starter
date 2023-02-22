@@ -14,7 +14,7 @@ abstract class Datatable
 
     protected bool $includeTrashed = false;
 
-    protected bool $globalFilter = false;
+    protected bool $globalFilter = true;
 
     protected Builder $builder;
 
@@ -65,7 +65,7 @@ abstract class Datatable
             return $this->builder;
         }
 
-        $direction = ($request['sortOrder'] == 1) ? 'asc' : 'desc';
+        $direction = ($request['sortOrder'] == 1) ? 'desc' : 'asc';
 
         return $this->builder->orderBy($request['sortField'], $direction);
     }

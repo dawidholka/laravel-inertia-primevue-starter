@@ -38,10 +38,14 @@ export default {
                     label: 'Menu',
                     items: [
                         {label: 'Dashboard', icon: 'pi pi-fw pi-home', to: this.route('dashboard'), prefix: 'dashboard'},
-                        {label: 'Datatable', icon: 'pi pi-fw pi-home', to: this.route('users.index'),},
-                        {label: 'Dashboard', icon: 'pi pi-fw pi-home', to: this.route('dashboard'),},
-                        {label: 'Dashboard', icon: 'pi pi-fw pi-home', to: this.route('dashboard'),},
-                        {label: 'Dashboard', icon: 'pi pi-fw pi-home', to: this.route('dashboard'),},
+                        {
+                            label: 'User Management', icon: 'pi pi-fw pi-users',
+                            items : [
+                                {label: 'Users', to: this.route('users')},
+                                {label: 'Roles', to: this.route('roles')},
+                                {label: 'Permissions', to: this.route('permissions')},
+                            ]
+                        },
                         {
                             label: 'Sign out', icon: 'pi pi-fw pi-sign-out', command: () => {
                                 this.$inertia.post(this.route('logout'))
@@ -57,7 +61,15 @@ export default {
             this.$toast.removeAllGroups();
         }
     },
+    mounted(){
+        this.$nextTick(() => {
+            this.onload();
+        });
+    },
     methods: {
+        onload(){
+            document.documentElement.style.fontSize = 13 + 'px';
+        },
         onWrapperClick() {
             if (!this.menuClick) {
                 this.overlayMenuActive = false;
