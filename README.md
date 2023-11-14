@@ -3,11 +3,10 @@
 ![Screenshot](docs/screen.png)
 
 
-Starter kit to accelerate the development of new applications. Based on starter kit from dawidholka, just continuing it implement the sakai-vue starter.
-The CRUD still missing Create, Update, and Delete
+Starter kit to accelerate the development of new applications.
 
 ### Features
-* Laravel 8
+* Laravel 10
 * Inertia.js
 * Jetstream
 * Vue 3
