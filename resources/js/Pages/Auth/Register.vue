@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import { Head,Link } from '@inertiajs/inertia-vue3';
+import { Head,Link } from '@inertiajs/vue3';
 import Checkbox from 'primevue/checkbox';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';

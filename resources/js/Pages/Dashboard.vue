@@ -1,3 +1,9 @@
+<script setup lang="ts">
+import AppLayout from '../Layouts/AppLayout.vue'
+
+defineLayout(AppLayout);
+</script>
+
 <template>
     <div class="grid">
         <div class="col-12">
@@ -8,11 +14,3 @@
         </div>
     </div>
 </template>
-
-<script>
-import AppLayout from '@/Layouts/AppLayout.vue'
-
-export default {
-    layout: AppLayout
-};
-</script>

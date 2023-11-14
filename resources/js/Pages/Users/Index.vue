@@ -239,9 +239,9 @@
 </template>
 
 <script>
-import AppLayout from "../../Layouts/AppLayout";
+import AppLayout from "../../Layouts/AppLayout.vue";
 import { FilterMatchMode } from "primevue/api";
-import { Head } from "@inertiajs/inertia-vue3";
+import { Head } from "@inertiajs/vue3";
 import Checkbox from "primevue/checkbox";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
@@ -257,7 +257,6 @@ import Dropdown from "primevue/dropdown";
 import RadioButton from "primevue/radiobutton";
 import Dialog from "primevue/dialog";
 import DatatableService from "../../Services/DatatableService";
-import { Inertia } from "@inertiajs/inertia";
 import axios from "axios";
 
 export default {

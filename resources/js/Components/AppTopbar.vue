@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import {Link} from '@inertiajs/inertia-vue3';
+import {Link} from '@inertiajs/vue3';
 import Button from "primevue/button";
 
 export default {
