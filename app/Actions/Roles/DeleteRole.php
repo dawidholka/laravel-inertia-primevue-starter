@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Actions\Users;
+namespace App\Actions\Roles;
 
 use Spatie\Permission\Models\Role;
 
 class DeleteRole
 {
-    public function execute(Role $role)
+    public function execute(Role $role): void
     {
         $role->delete();
     }

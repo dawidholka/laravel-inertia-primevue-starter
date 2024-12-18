@@ -11,12 +11,18 @@ use Spatie\Permission\Models\Permission;
 
 class PermissionController extends Controller
 {
-    public function index(Request $request, PermissionDatatable $datatable): JsonResponse
+    public function index(
+        Request $request,
+        PermissionDatatable $datatable,
+    ): JsonResponse
     {
         $data = $datatable->make($request);
         return response()->json($data);
     }
-    public function store(PermissionRequest $request){
+    public function store(
+        PermissionRequest $request
+    ): JsonResponse
+    {
         $permission = new Permission();
         $permission->name = $request->name;
         $permission->guard_name = $request->guard_name;

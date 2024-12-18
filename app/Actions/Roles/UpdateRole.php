@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Users;
+namespace App\Actions\Roles;
 
 use App\DTOs\RoleDTO;
 use Spatie\Permission\Models\Role;

@@ -2,11 +2,15 @@
 
 namespace App\DTOs;
 
-use Spatie\DataTransferObject\DataTransferObject;
+use Spatie\LaravelData\Data;
 
-class UserDTO extends DataTransferObject
+class UserDTO extends Data
 {
-    public string $name;
-    public string $email;
-    public ?string $password;
+    public function __construct(
+        public string  $name,
+        public string  $email,
+        public ?string $password,
+    )
+    {
+    }
 }
