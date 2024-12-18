@@ -11,38 +11,41 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Inertia\Inertia;
 
 class UserController extends Controller
 {
     public function index(Request $request, UserDatatable $datatable): JsonResponse
     {
         $data = $datatable->make($request);
+
         return response()->json($data);
     }
+
     public function store(
         Request    $request,
         CreateUser $createUser
-    )
+    ): JsonResponse
     {
         //abort_if(!auth()->user()->admin, 403);
 
-        $request->validate([
+        $validated = $request->validate([
             'name' => ['required', 'string'],
             'email' => ['required', 'email', 'unique:users,email'],
             'password' => ['nullable', 'string']
         ]);
 
-        $user = $createUser->execute(new UserDTO([
-            'name' => $request['name'],
-            'email' => $request['email'],
-            'password' => Hash::make($request['password'])
-        ]));
+        $data = new UserDTO(
+            name: $validated['name'],
+            email: $validated['email'],
+            password: Hash::make($validated['password'])
+        );
+
+        $user = $createUser->execute($data);
 
         return response()->json([
             'success' => true,
             'message' => 'User created successfully',
-            'data'    => $user
+            'data' => $user
         ]);
     }
 
@@ -54,18 +57,19 @@ class UserController extends Controller
     {
         // abort_if(!auth()->user()->admin, 403);
 
-        $request->validate([
+        $validated = $request->validate([
             'name' => ['required', 'string'],
             'email' => ['required', 'email', 'unique:users,email,' . $user->id],
             'password' => ['nullable', 'string']
         ]);
 
-        $updateUser->execute($user, new UserDTO([
-            'name' => $request['name'],
-            'email' => $request['email'],
-            'password' => $request['password'] ?
-                Hash::make($request['password']) : null,
-        ]));
+        $data = new UserDTO(
+            name: $validated['name'],
+            email: $validated['email'],
+            password: isset($validated['password']) ? Hash::make($validated['password']) : null,
+        );
+
+        $updateUser->execute($user, $data);
 
         return response()->json([
             'success' => true,
