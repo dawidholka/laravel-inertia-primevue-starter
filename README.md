@@ -16,4 +16,4 @@ Starter kit to accelerate the development of new applications.
 * Spatie Permissions
 * Spatie Settings
 * Spatie View Models
-* Spatie Data Transfer Objects
+* Spatie Laravel Data
