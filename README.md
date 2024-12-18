@@ -3,7 +3,7 @@
 ![Screenshot](docs/screen.png)
 
 
-Starter kit to accelerate the development of new applications.
+Starter kit to speed up the development of new applications.
 
 ### Features
 * Laravel 10
